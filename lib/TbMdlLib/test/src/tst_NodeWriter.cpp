@@ -294,6 +294,30 @@ TEST_CASE("NodeWriter")
     CHECK(actual == expected);
   }
 
+  SECTION("writeQuake3Map")
+  {
+    const auto worldBounds = vm::bbox3d{8192.0};
+
+    auto map = mdl::WorldNode{{}, {}, mdl::MapFormat::Quake3};
+
+    auto builder = mdl::BrushBuilder{map.mapFormat(), worldBounds};
+    auto* brushNode1 =
+      new mdl::BrushNode{builder.createCube(64.0, "e1u1/test") | kdl::value()};
+    map.defaultLayer()->addChild(brushNode1);
+
+    auto str = std::stringstream{};
+    auto writer = NodeWriter{map, str};
+    writer.writeMap(taskManager);
+
+    const auto actual = str.str();
+
+    // Quake 3 brushes are serialized as brush primitives wrapped in a brushDef block,
+    // and each face stores a 2x3 texture projection matrix.
+    CHECK(actual.find("brushDef") != std::string::npos);
+    CHECK(actual.find("( ( ") != std::string::npos);
+    CHECK(actual.find("e1u1/test") != std::string::npos);
+  }
+
   SECTION("writeWorldspawnWithBrushInDefaultLayer")
   {
     const auto worldBounds = vm::bbox3d{8192.0};

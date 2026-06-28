@@ -169,13 +169,15 @@ bool isParallelUVCoordSystem(const MapFormat format)
   case MapFormat::Valve:
   case MapFormat::Quake2_Valve:
   case MapFormat::Quake3_Valve:
+  // Quake 3 brush primitives (brushDef) use parallel (face-aligned) texture projection,
+  // so the Quake3 format stores a parallel UV coordinate system.
+  case MapFormat::Quake3:
     return true;
   case MapFormat::Standard:
   case MapFormat::Quake2:
   case MapFormat::Hexen2:
   case MapFormat::Daikatana:
   case MapFormat::Quake3_Legacy:
-  case MapFormat::Quake3:
   case MapFormat::Unknown:
     return false;
     switchDefault();
